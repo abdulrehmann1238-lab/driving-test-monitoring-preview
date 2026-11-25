@@ -33,10 +33,18 @@ import { CustomerCalendar } from './components/dashboards/customer/CustomerCalen
 
 const MainAppContent: React.FC = () => {
   const { role, activePath, activeBrand } = useApp();
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(() => {
+    // Show only on initial session entry
+    return !sessionStorage.getItem('autopass_loaded');
+  });
+
+  const handleLoadingComplete = () => {
+    sessionStorage.setItem('autopass_loaded', 'true');
+    setInitialLoading(false);
+  };
 
   if (initialLoading) {
-    return <LoadingScreen onComplete={() => setInitialLoading(false)} brandName={activeBrand.name} />;
+    return <LoadingScreen onComplete={handleLoadingComplete} brandName={activeBrand.name} />;
   }
 
   // If role is visitor, show the public landing marketing site
